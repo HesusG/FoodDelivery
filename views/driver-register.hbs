@@ -5,6 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Driver Register</title>
+    <style>
+        body
+        {
+            display:flex;
+            flex-direction: column;
+        }
+    </style>
 </head>
 
 <body>
@@ -15,17 +22,29 @@
     <main>
         <section>
             <h2>Register as a Driver</h2>
-            <form></form>
+            <form action="/register" method="post"> <!-- Added action and method -->
                 <label for="username">Username:</label>
                 <input type="text" id="username" name="username" required>
 
                 <label for="password">Password:</label>
                 <input type="password" id="password" name="password" required>
 
+                <label for="fullName">Full Name:</label>
+                <input type="text" id="fullName" name="fullName" required>
+
+                <label for="vehicleModel">Vehicle Model:</label>
+                <input type="text" id="vehicleModel" name="vehicleModel" required>
+
+                <label for="color">Vehicle Color:</label>
+                <input type="text" id="color" name="color" required>
+
+                <label for="licensePlate">License Plate:</label>
+                <input type="text" id="licensePlate" name="licensePlate" required>
+
                 <button type="submit">Register</button>
             </form>
             <p>Already have an account? <a href="/login">Log in here</a></p>
-            <p>HOME<a href="/">HOME</a></p>
+            <p>HOME <a href="/">HOME</a></p>
         </section>
     </main>
 

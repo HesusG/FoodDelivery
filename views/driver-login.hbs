@@ -15,7 +15,7 @@
     <main>
         <section>
             <h2>Log In</h2>
-            <form></form>
+            <form action="/login" method="post"> <!-- Updated form action and method -->
                 <label for="username">Username:</label>
                 <input type="text" id="username" name="username" required>
 
@@ -24,8 +24,11 @@
 
                 <button type="submit">Log In</button>
             </form>
+            {{#if error}} <!-- Show error message if login fails -->
+            <p style="color: red;">Login failed. Please check your username and password.</p>
+            {{/if}}
             <p>Don't have an account? <a href="/register">Register here</a></p>
-            <p>HOME<a href="/">HOME</a></p>
+            <p>HOME <a href="/">HOME</a></p>
         </section>
     </main>
 
