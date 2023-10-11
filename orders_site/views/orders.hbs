@@ -1,0 +1,39 @@
+{{#if isEmptyOrders}}
+  <p>No orders in the database.</p>
+{{else}}
+  {{#each orders}}
+    <div class="order-card">
+      <div class="order-details">
+        <p><strong>Customer Name:</strong> {{customerName}}</p>
+        <p><strong>Delivery Address:</strong> {{deliveryAddress}}</p>
+        <p><strong>Date of Order:</strong> {{orderDateTime}}</p>
+        <p><strong>Number of Items Ordered:</strong> {{itemsOrdered.length}}</p>
+        <p><strong>Order Total:</strong> ${{orderTotal}}</p>
+        <p><strong>Status:</strong> {{status}}</p>
+        <form action="/changeStatus" method="POST">
+          <input type="hidden" name="orderId" value="{{_id}}">
+          <select name="newStatus">
+            <option value="RECEIVED">RECEIVED</option>
+            <option value="READY FOR DELIVERY">READY FOR DELIVERY</option>
+            <option value="IN TRANSIT">IN TRANSIT</option>
+            <option value="DELIVERED">DELIVERED</option>
+          </select>
+          <button type="submit" class="change-status-button">Change Status</button>
+        </form>
+      </div>
+      <div class="driver-info">
+        <p><strong>Driver Name:</strong> {{driverName}}</p>
+        <p><strong>License Plate:</strong> {{driverLicensePlate}}</p>
+        {{#if isDelivered}}
+        <p><strong>View Delivery Photo:</strong> <a href="{{deliveryPhoto}}" target="_blank">View Photo</a></p>
+        {{/if}}
+      </div>
+      {{#if isReceived}}
+      <div class="assign-order">
+        <button class="assign-order-button" data-order-id="{{_id}}">Assign Order</button>
+      </div>
+      {{/if}}
+    </div>
+  {{/each}}
+{{/if}}
+
