@@ -317,6 +317,56 @@ app.get("/order-history", async (req, res) => {
   }
 });
 
+app.get("/search-orders", async (req, res) => {
+  try {
+    const drivers = await Driver.find().distinct("fullName").lean().exec();
+    const cars = await Driver.find().distinct("vehicleModel").lean().exec();
+    res.render("search-orders", { drivers, cars, orders: [] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.post("/search-orders", async (req, res) => {
+  const driverNameFromUI = req.body.driverName;
+  const carFromUI = req.body.car;
+  const statusFromUI = req.body.status;
+
+  try {
+    const searchCriteria = {};
+
+    if (driverNameFromUI) {
+      const driver = await Driver.findOne({ fullName: driverNameFromUI });
+      if (driver) {
+        searchCriteria.assignedTo = driver.licensePlate;
+      } else {
+        return res.send("No matching driver found.");
+      }
+    }
+
+    if (statusFromUI) {
+      searchCriteria.status = statusFromUI;
+    }
+
+    const matchedOrders = await Order.find(searchCriteria).lean().exec();
+
+    const drivers = await Driver.find().distinct("fullName").lean().exec();
+
+    matchedOrders.forEach((order) => {
+      order.orderTotal = calculateOrderTotal(order.itemsOrdered);
+    });
+
+    return res.render("search-orders", {
+      drivers,
+      orders: matchedOrders,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.send(error);
+  }
+});
+
 const formatDate = (orderDateTime) => {
   return orderDateTime;
 };

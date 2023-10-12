@@ -1,0 +1,67 @@
+<body>
+  <h1>Search Orders</h1>
+  <div class="search-form">
+    <form action="/search-orders" method="POST">
+      <label for="orderNumber">Search by Order Number:</label>
+      <input type="text" id="orderNumber" name="orderNumber" required>
+      <button type="submit">Search</button>
+    </form>
+
+    <form action="/search-orders" method="POST">
+      <label for "driverName">Search by Driver's Full Name:</label>
+      <select id="driverName" name="driverName" required>
+        {{#each drivers}}
+          <option value="{{this}}">{{this}}</option>
+        {{/each}}
+      </select>
+      <button type="submit">Search</button>
+    </form>
+
+
+    <form action="/search-orders" method="POST">
+      <label for="status">Search by Status:</label>
+      <select id="status" name="status" required>
+        <option value="RECEIVED">RECEIVED</option>
+        <option value="READY FOR DELIVERY">READY FOR DELIVERY</option>
+        <option value="IN TRANSIT">IN TRANSIT</option>
+        <option value="DELIVERED">DELIVERED</option>
+      </select>
+      <button type="submit">Search</button>
+    </form>
+  </div>
+
+  {{#if orders.length}}
+  {{#each orders}}
+    <div class="order-card">
+      {{#if isReceived}}
+        <div class="new-order-rectangle">New Order</div>
+      {{/if}}
+      <div class="order-details">
+        <p><strong>Customer Name:</strong> {{customerName}}</p>
+        <p><strong>Delivery Address:</strong> {{deliveryAddress}}</p>
+        <p><strong>Date of Order:</strong> {{orderDateTime}}</p>
+        <p><strong>Number of Items Ordered:</strong> {{itemsOrdered.length}}</p>
+        <p><strong>Order Total:</strong> ${{orderTotal}}</p>
+        <p><strong>Status:</strong> {{status}}</p>
+      </div>
+      <div class="driver-info">
+        {{#if isAssigned}}
+          <p><strong>Driver Name:</strong> {{driverName}}</p>
+          <p><strong>License Plate:</strong> {{driverLicensePlate}}</p>
+        {{/if}}
+        {{#if isDelivered}}
+          <br>
+          <p><strong>Delivery Photo:</strong> <a href="{{picture}}" target="_blank">View Photo</a></p>
+        {{/if}}
+      </div>
+      {{#unless isAssigned}}
+        <div class="assign-order">
+          <button class="assign-order-button" data-order-id="{{_id}}">Assign Order</button>
+        </div>
+      {{/unless}}
+    </div>
+  {{/each}}
+{{else}}
+  <p>No matching orders found.</p>
+{{/if}}
+</body>
