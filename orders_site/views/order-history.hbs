@@ -1,0 +1,24 @@
+{{#if isEmptyOrders}}
+  <p>No orders in the database.</p>
+{{else}}
+  {{#each orders}}
+    <div class="order-card">
+      <div class="order-details">
+        <p><strong>Customer Name:</strong> {{customerName}}</p>
+        <p><strong>Delivery Address:</strong> {{deliveryAddress}}</p>
+        <p><strong>Date of Order:</strong> {{formattedOrderDateTime}}</p>
+        <p><strong>Number of Items Ordered:</strong> {{itemsOrdered.length}}</p>
+        <p><strong>Order Total:</strong> ${{orderTotal}}</p>
+        <p><strong>Status:</strong> {{status}}</p>
+      </div>
+      <div class="driver-info">
+        {{#if isAssigned}}
+        <p><strong>Driver Name:</strong> {{driverName}}</p>
+        <p><strong>License Plate:</strong> {{driverLicensePlate}}</p>
+        {{/if}}
+        <br>
+        <p><strong>Delivery Photo:</strong> <a href="{{picture}}" target="_blank">View Photo</a></p>
+      </div>
+    </div>
+  {{/each}}
+{{/if}}

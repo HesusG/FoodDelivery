@@ -107,6 +107,7 @@ footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
 }
 
 .order-card .order-details {
@@ -126,4 +127,16 @@ footer {
 
 .order-card .assign-order-button:hover {
   background-color: #451400;
+}
+
+.new-order-rectangle {
+  background-color: #A81612;
+  color: white;
+  padding: 4px 8px;
+  top: 0;
+  right: 0;
+  position: absolute;
+  border-radius: 0 0 0 10px;
+  font-weight: bold;
+  font-size: 14px;
 }

@@ -71,15 +71,32 @@ const orderSchema = new mongoose.Schema(
   },
   { versionKey: false }
 );
-
 const driverSchema = new mongoose.Schema({
-  name: {
+  username: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  fullName: {
+    type: String,
+    required: true,
+  },
+  vehicleModel: {
+    type: String,
+    required: true,
+  },
+  color: {
     type: String,
     required: true,
   },
   licensePlate: {
     type: String,
     required: true,
+    unique: true,
   },
 });
 
@@ -202,7 +219,11 @@ const setupDatabase = async () => {
 setupDatabase();
 app.get("/", async (req, res) => {
   try {
-    const orders = await Order.find().sort({ orderDateTime: 1 }).lean().exec();
+    const orders = await Order.find({ status: { $ne: "DELIVERED" } })
+      .sort({ orderDateTime: 1 })
+      .lean()
+      .exec();
+
     const isEmptyOrders = orders.length === 0;
 
     for (const order of orders) {
@@ -210,6 +231,7 @@ app.get("/", async (req, res) => {
       order.orderTotal = calculateOrderTotal(order.itemsOrdered);
       order.isReceived = order.status === "RECEIVED";
       order.isDelivered = order.status === "DELIVERED";
+      order.isAssigned = order.assignedTo !== "";
 
       const matchedDriver = await Driver.findOne({
         licensePlate: order.assignedTo,
@@ -218,12 +240,77 @@ app.get("/", async (req, res) => {
         .exec();
 
       if (matchedDriver) {
-        order.driverName = matchedDriver.name;
+        order.driverName = matchedDriver.fullName;
         order.driverLicensePlate = matchedDriver.licensePlate;
       }
     }
 
     return res.render("orders", { orders, isEmptyOrders });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send("Internal Server Error");
+  }
+});
+
+app.post("/changeStatus", async (req, res) => {
+  try {
+    const orderId = req.body.orderId;
+    const newStatus = req.body.newStatus;
+
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).send("Order not found");
+    }
+
+    if (newStatus === "IN TRANSIT" || newStatus === "DELIVERED") {
+      if (!order.assignedTo) {
+        return res
+          .status(400)
+          .send(
+            "Order cannot be changed to IN TRANSIT or DELIVERED if it's not assigned."
+          );
+      }
+    }
+
+    order.status = newStatus;
+    await order.save();
+
+    return res.redirect("/");
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send("Internal Server Error");
+  }
+});
+
+app.get("/order-history", async (req, res) => {
+  try {
+    const deliveredOrders = await Order.find({ status: "DELIVERED" })
+      .sort({ orderDateTime: 1 })
+      .lean()
+      .exec();
+    const isEmptyOrders = deliveredOrders.length === 0;
+
+    for (const order of deliveredOrders) {
+      order.formattedOrderDateTime = formatDate(order.orderDateTime);
+      order.orderTotal = calculateOrderTotal(order.itemsOrdered);
+
+      const matchedDriver = await Driver.findOne({
+        licensePlate: order.assignedTo,
+      })
+        .lean()
+        .exec();
+
+      if (matchedDriver) {
+        order.driverName = matchedDriver.fullName;
+        order.driverLicensePlate = matchedDriver.licensePlate;
+      }
+    }
+
+    return res.render("order-history", {
+      orders: deliveredOrders,
+      isEmptyOrders,
+    });
   } catch (err) {
     console.error(err);
     return res.status(500).send("Internal Server Error");

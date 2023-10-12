@@ -2,8 +2,13 @@
   <p>No orders in the database.</p>
 {{else}}
   {{#each orders}}
+
     <div class="order-card">
+                                        {{#if isReceived}}
+      <div class="new-order-rectangle">New Order</div>
+      {{/if}}
       <div class="order-details">
+
         <p><strong>Customer Name:</strong> {{customerName}}</p>
         <p><strong>Delivery Address:</strong> {{deliveryAddress}}</p>
         <p><strong>Date of Order:</strong> {{orderDateTime}}</p>
@@ -22,17 +27,22 @@
         </form>
       </div>
       <div class="driver-info">
+              {{#if isAssigned}}
         <p><strong>Driver Name:</strong> {{driverName}}</p>
         <p><strong>License Plate:</strong> {{driverLicensePlate}}</p>
+      {{/if}}
         {{#if isDelivered}}
-        <p><strong>View Delivery Photo:</strong> <a href="{{deliveryPhoto}}" target="_blank">View Photo</a></p>
+        <br>
+        <p><strong>Delivery Photo:</strong> <a href="{{picture}}" target="_blank">View Photo</a></p>
+
         {{/if}}
       </div>
-      {{#if isReceived}}
+      {{#unless isAssigned}}
       <div class="assign-order">
         <button class="assign-order-button" data-order-id="{{_id}}">Assign Order</button>
       </div>
-      {{/if}}
+      {{/unless}}
+
     </div>
   {{/each}}
 {{/if}}
